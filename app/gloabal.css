@@ -1,0 +1,20 @@
+.tabs-list {
+    display: flex;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  .tab-trigger {
+    padding: 10px 15px;
+    border: none;
+    background: none;
+    cursor: pointer;
+  }
+  
+  .tab-trigger.active {
+    border-bottom: 2px solid #007bff;
+    font-weight: bold;
+  }
+  
+  .tab-content {
+    padding: 20px 0;
+  }

@@ -1,0 +1,143 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  name      String
+  comment   String
+  isVisible Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Service {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Habitat {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  image       String
+  comment     String?   // Added field
+  animals     Animal[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Animal {
+  id                      Int               @id @default(autoincrement())
+  name                    String
+  species                 String
+  image                   String
+  status                  String
+  age                     Int
+  weight                  Float
+  activityLevel           String
+  dietaryNeeds            String?
+  habitatId               Int?
+  habitat                 Habitat?          @relation(fields: [habitatId], references: [id])
+  healthRecords           HealthRecord[]
+  feedingRecords          FeedingRecord[]
+  animalViews             AnimalView[]
+  dailyHealthChecks       DailyHealthCheck[]
+  recommendedFoodQuantity Float?
+  vaccinations            Vaccination[]
+  createdAt               DateTime          @default(now())
+  updatedAt               DateTime          @updatedAt
+}
+
+model HealthRecord {
+  id              Int      @id @default(autoincrement())
+  animalId        Int
+  animal          Animal   @relation(fields: [animalId], references: [id])
+  date            DateTime
+  status          String
+  food            String
+  quantity        Float
+  details         String?
+  weight          Float?
+  temperature     Float?
+  symptoms        String?
+  diagnosis       String?
+  treatment       String?
+  medications     String?
+  followUpDate    DateTime?
+  veterinarianId  Int
+  veterinarian    User     @relation(fields: [veterinarianId], references: [id])
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Vaccination {
+  id                Int      @id @default(autoincrement())
+  animalId          Int
+  animal            Animal   @relation(fields: [animalId], references: [id])
+  vaccineName       String
+  dateAdministered  DateTime
+  expirationDate    DateTime?
+  veterinarianId    Int
+  veterinarian      User     @relation(fields: [veterinarianId], references: [id])
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model User {
+  id               Int               @id @default(autoincrement())
+  email            String            @unique
+  password         String
+  role             String
+  healthRecords    HealthRecord[]
+  feedingRecords   FeedingRecord[]
+  dailyHealthChecks DailyHealthCheck[] // Add this line
+  administeredVaccinations Vaccination[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+}
+
+model FeedingRecord {
+  id        Int      @id @default(autoincrement())
+  animalId  Int
+  animal    Animal   @relation(fields: [animalId], references: [id])
+  date      DateTime
+  time      String
+  food      String
+  quantity  Float
+  employeeId Int
+  employee  User     @relation(fields: [employeeId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AnimalView {
+  id        Int      @id @default(autoincrement())
+  animalId  Int
+  animal    Animal   @relation(fields: [animalId], references: [id])
+  viewCount Int      @default(0)
+  updatedAt DateTime @updatedAt
+}
+
+model DailyHealthCheck {
+  id              Int      @id @default(autoincrement())
+  animal          Animal   @relation(fields: [animalId], references: [id])
+  animalId        Int
+  date            DateTime
+  status          String
+  notes           String
+  veterinarian    User     @relation(fields: [veterinarianId], references: [id])
+  veterinarianId  Int
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
